@@ -76,13 +76,19 @@ async function createWindow() {
 
   // Apply electron-updater
   update(win)
+
+  win.on("close", (e) => {
+    win.webContents.send("close-window");
+    e.preventDefault();
+  });
+  ipcMain.handle("close-window-allowed", () => win.destroy());
 }
 
 app.whenReady().then(createWindow)
 
 app.on('window-all-closed', () => {
   win = null
-  if (process.platform !== 'darwin') app.quit()
+  app.quit()
 })
 
 app.on('second-instance', () => {
